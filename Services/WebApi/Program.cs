@@ -1,5 +1,8 @@
 using Carter;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Models;
 using Spectre.Console;
 using WebApi.Infrastructure.Dependencies;
@@ -16,6 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddServices(builder.Configuration);
+builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -25,15 +31,49 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = ".NET Core 8 Minimal API with Swagger"
     });
+
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+
+        Flows = new OpenApiOAuthFlows
+        {
+            Password = new OpenApiOAuthFlow
+            {
+                TokenUrl = new Uri("/v1/auth", UriKind.Relative),
+                Extensions = new Dictionary<string, IOpenApiExtension>
+                {
+                    { "returnSecureToken", new OpenApiBoolean(true) },
+                },
+            }
+        }
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
+                },
+                Scheme = "oauth2",
+                Name = JwtBearerDefaults.AuthenticationScheme,
+                In = ParameterLocation.Header,
+            },
+            new List<string> { "openid", "email", "profile" }
+        }
+    });
 });
 
 builder.Services.AddHealthChecks();
-
-builder.Services.AddServices(builder.Configuration);
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseMiddleware<AppErrorMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -61,6 +101,9 @@ app.UseCors(builder =>
         .AllowAnyHeader();
 });
 
+string name = System.Reflection.Assembly.GetExecutingAssembly()?.GetName()?.Name ?? "N/A";
+
+AnsiConsole.MarkupLine("[green]✓ App: {0}[/]", name);
 AnsiConsole.MarkupLine("[green]✓ Build completed successfully[/]");
 try
 {
