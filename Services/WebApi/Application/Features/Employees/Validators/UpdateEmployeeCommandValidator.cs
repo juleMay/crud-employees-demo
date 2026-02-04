@@ -60,7 +60,7 @@ public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCo
         RuleFor(x => x.EmployeeDto.RoleId)
             .NotEmpty().WithMessage("Role Id is required");
         RuleFor(x => x.EmployeeDto.StatusId)
-            .NotEmpty().WithMessage("Status Id is required")
+            .NotNull().WithMessage("Status Id is required")
             .IsInEnum().WithMessage("Status Id must be a valid enum value");
         RuleFor(x => x.EmployeeDto.CompanyId)
             .NotEmpty().WithMessage("Company Id is required");
