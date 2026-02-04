@@ -24,6 +24,10 @@ The application will start with all necessary services (database, db manager, un
 docker-compose down
 ```
 
+### Development Routes
+- **API Swagger Documentation**: http://localhost:5000/swagger/index.html
+- **phpMyAdmin**: http://localhost:8080
+
 ## Features
 - Create, read, update, and delete employee records
 - Persistent data storage with Docker volumes
