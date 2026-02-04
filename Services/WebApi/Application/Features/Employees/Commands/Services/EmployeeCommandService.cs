@@ -1,6 +1,7 @@
 using WebApi.Application.Features.Employees.Commands.Services.Contracts;
 using WebApi.Domain.Entities;
 using WebApi.Domain.Enums;
+using WebApi.Domain.ValueObjects;
 using WebApi.Infrastructure.Exceptions;
 using WebApi.Infrastructure.Repositories.Contracts;
 
@@ -29,7 +30,7 @@ public class EmployeeCommandService(IUnitOfWork _unitOfWork) : IEmployeeCommandS
         {
             errors.Add($"Username '{username}' is already taken");
         }
-        if (await _unitOfWork.UserRepository.ExistsByEmailAsync(email, cancellationToken))
+        if (await _unitOfWork.UserRepository.ExistsByEmailAsync(Email.Create(email), cancellationToken))
         {
             errors.Add($"Email '{email}' is already registered");
         }
@@ -92,7 +93,7 @@ public class EmployeeCommandService(IUnitOfWork _unitOfWork) : IEmployeeCommandS
         var employee = await _unitOfWork.EmployeeRepository.GetIncludeUserByIdAsync(request.EmployeeId, cancellationToken);
         if (employee is not null)
         {
-            UpdateEmployeeStatus(employee, (EmployeeStatus)request.EmployeeDto.StatusId, request.EmployeeDto.DeletedOn);
+            UpdateEmployeeStatus(employee, request.EmployeeDto.StatusId, request.EmployeeDto.DeletedOn);
             employee.Update(request.EmployeeDto);
             _unitOfWork.EmployeeRepository.Update(employee);
         }
@@ -147,7 +148,7 @@ public class EmployeeCommandService(IUnitOfWork _unitOfWork) : IEmployeeCommandS
         {
             errors.Add($"Username '{username}' is already taken");
         }
-        if (await _unitOfWork.UserRepository.ExistsByEmailAsync(email, user.Id, cancellationToken))
+        if (await _unitOfWork.UserRepository.ExistsByEmailAsync(Email.Create(email), user.Id, cancellationToken))
         {
             errors.Add($"Email '{email}' is already registered");
         }
