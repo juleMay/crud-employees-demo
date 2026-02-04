@@ -19,7 +19,7 @@ public sealed class PhoneNumber : ValueObject
         {
             throw new ValidationAppException("Phone number cannot be empty");
         }
-        return new(number);
+        return new(number.Trim().ToLowerInvariant());
     }
 
     public static PhoneNumber Empty() => new(DEFAULT);

@@ -5,6 +5,7 @@ namespace WebApi.Infrastructure.Contexts;
 
 public class WriteDbContext(DbContextOptions<WriteDbContext> options) : DbContext(options)
 {
+    public DbSet<User> Users => Set<User>();
     public DbSet<Employee> Employees => Set<Employee>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

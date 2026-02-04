@@ -37,11 +37,6 @@ public class CreateCreateEmployeeCommandCommandValidator : AbstractValidator<Cre
                 .NotEmpty().WithMessage("Created on is required when status is Active")
                 .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Created on cannot be in the future");
         });
-        // When(x => x.EmployeeDto.UpdatedOn != null, () =>
-        // {
-        //     RuleFor(x => x.EmployeeDto.UpdatedOn)
-        //         .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Updated on cannot be in the future");
-        // });
         When(x => x.EmployeeDto.StatusId == EmployeeStatus.Inactive, () =>
         {
             RuleFor(x => x.EmployeeDto.DeletedOn)

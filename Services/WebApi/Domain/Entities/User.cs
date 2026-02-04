@@ -18,7 +18,7 @@ public class User : Entity<Guid>
     public Portal Portal { get; private set; }
 
     public User() : base(Guid.Empty) { }
-    public User(
+    private User(
         Guid id,
         string username,
         Email email,
