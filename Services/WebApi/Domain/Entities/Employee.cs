@@ -44,7 +44,7 @@ public class Employee : AuditableEntity<Guid>
             employeeDto.Name,
             employeeDto.Telephone == null ? null : PhoneNumber.Create(employeeDto.Telephone),
             employeeDto.Fax == null ? null : PhoneNumber.Create(employeeDto.Fax),
-            (EmployeeStatus)employeeDto.StatusId,
+            employeeDto.StatusId,
             DateTime.UtcNow
         );
     }
